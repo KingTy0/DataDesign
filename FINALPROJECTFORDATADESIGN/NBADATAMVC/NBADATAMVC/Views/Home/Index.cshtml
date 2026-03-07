@@ -1,0 +1,61 @@
+﻿@using MongoDB.Bson
+@model List<BsonDocument>
+<h2>NBA Player Explorer</h2>
+
+<form asp-action="Index" method="get">
+    <div class="form-group">
+        <label>Player Name:</label>
+        <input name="name" value="@ViewBag.NameFilter" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Team:</label>
+        <input name="team" value="@ViewBag.TeamFilter" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Team</th>
+            <th>Position</th>
+            <th>Height</th>
+            <th>Weight</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var player in Model)
+        {
+            <tr>
+                <td>@(player.GetValue("display_first_last", new BsonString("N/A")).AsString)</td>
+                <td>@(player.GetValue("team_abbreviation", new BsonString("N/A")).AsString)</td>
+                <td>@(player.GetValue("position", new BsonString("N/A")).AsString)</td>
+                <td>@(player.GetValue("height", new BsonString("N/A")).AsString)</td>
+                <td>@(player.GetValue("weight", new BsonInt32(0)).AsInt32) lbs</td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+<!-- Pagination -->
+<div class="d-flex justify-content-between">
+    <div>
+        Page @ViewBag.Page of @ViewBag.TotalPages
+    </div>
+    <div>
+        @if (ViewBag.Page > 1)
+        {
+            <a asp-action="Index" asp-route-page="@(ViewBag.Page - 1)"
+               asp-route-name="@ViewBag.NameFilter" asp-route-team="@ViewBag.TeamFilter"
+               class="btn btn-sm btn-outline-primary">Previous</a>
+        }
+        @if (ViewBag.Page < ViewBag.TotalPages)
+        {
+            <a asp-action="Index" asp-route-page="@(ViewBag.Page + 1)"
+               asp-route-name="@ViewBag.NameFilter" asp-route-team="@ViewBag.TeamFilter"
+               class="btn btn-sm btn-outline-primary">Next</a>
+        }
+    </div>
+</div>
